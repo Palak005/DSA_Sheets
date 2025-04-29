@@ -1,15 +1,25 @@
-class Solution {
-    // [5, 7, 8, 6]
-    // Optimal Approach : Finding the break point index
-    //                     if breakpoint not found : Array is in descending order, so reverse the array
-    //                     else : 
-    //                     1. find the minimum value which is greater than breakpoint element, remember 
-    //                     the min value will be considered from the last as it will be in descendig order.
-    //                     2. Swap the elements
-    //                     3. Reverse the array for breakpoint to n.
+import java.util.*;
 
+/*************************************************************
+ * 🔄 Problem: Next Permutation (LeetCode)
+ *
+ * Rearranges numbers into the lexicographically next greater permutation.
+ * If no such permutation exists, rearranges it as the lowest possible order (ascending).
+ *
+ * ✅ Optimal Approach:
+ *   1. Find the **breakpoint**: index `i` such that nums[i] < nums[i+1] from the end
+ *   2. If not found: array is in descending order → reverse entire array
+ *   3. Else:
+ *      - Find the **smallest number greater than nums[breakpoint]** from the end
+ *      - Swap with nums[breakpoint]
+ *      - Reverse the subarray from breakpoint+1 to end
+ *************************************************************/
+
+class Solution {
+    
+    // 🔁 Utility: Reverse elements from index 'start' to 'end'
     public void reverse(int[] nums, int start, int end){
-        while(start<end){
+        while(start < end){
             int temp = nums[start];
             nums[start++] = nums[end];
             nums[end--] = temp;
@@ -18,56 +28,65 @@ class Solution {
 
     public void nextPermutation(int[] nums) {
         int n = nums.length;
-
-        //Finding the Break Point
         int breakPoint = -1;
-        for(int i = n-1; i>0; i--){
-            if(nums[i]>nums[i-1]){
-                breakPoint = i-1;
+
+        // 🔍 Step 1: Find the break point
+        for(int i = n - 2; i >= 0; i--){
+            if(nums[i] < nums[i + 1]){
+                breakPoint = i;
                 break;
             }
         }
 
+        // ⚠️ If no breakPoint found, array is in descending order
         if(breakPoint == -1){
-            reverse(nums, 0, n-1);
+            reverse(nums, 0, n - 1);
             return;
-        } 
+        }
 
-        //Finding next greatest element
-        for(int i = n-1; i>0; i--){
-            if(nums[i]>nums[breakPoint-1]){
+        // 🔁 Step 2: Find the next greater element from end
+        for(int i = n - 1; i > breakPoint; i--){
+            if(nums[i] > nums[breakPoint]){
                 int temp = nums[i];
                 nums[i] = nums[breakPoint];
                 nums[breakPoint] = temp;
+                break; // ✅ Important: break after first valid swap
             }
         }
 
-        reverse(nums, breakPoint, n-1);
+        // 🔄 Step 3: Reverse the suffix
+        reverse(nums, breakPoint + 1, n - 1);
     }
 }
 
 
-//Brute Force : Using Double Loop to find the next greater element
-// class Solution {
-//     public void nextPermutation(int[] nums) {
-//         int n = nums.length;
+/*************************************************************
+ * 🧠 Time Complexity:
+ *   - O(n): One pass to find breakpoint + one pass to find swap + reverse
+ *
+ * 💾 Space Complexity:
+ *   - O(1): In-place operation
+ *************************************************************/
 
-//         for(int i = n-1; i>=0; i--){
-//             for(int j = n-1; j>i; j--){
-//                 //Checking from last index
-//                 if(nums[j]>nums[i]){
-//                     //Swapping jth and ith index elements
-//                     int temp = nums[i];
-//                     nums[i] = nums[j];
-//                     nums[j] = temp;
 
-//                     //Sorting the end part of the array
-//                     Arrays.sort(nums, i+1, n);
-//                     return;
-//                 }
-//             }
-//         }
-
-//         Arrays.sort(nums);
-//     }
-// }
+/*************************************************************
+ * 🐢 Brute Force Approach (for reference)
+ *
+ * class Solution {
+ *     public void nextPermutation(int[] nums) {
+ *         int n = nums.length;
+ *         for (int i = n - 2; i >= 0; i--) {
+ *             for (int j = n - 1; j > i; j--) {
+ *                 if (nums[j] > nums[i]) {
+ *                     int temp = nums[i];
+ *                     nums[i] = nums[j];
+ *                     nums[j] = temp;
+ *                     Arrays.sort(nums, i + 1, n); // Sort the suffix
+ *                     return;
+ *                 }
+ *             }
+ *         }
+ *         Arrays.sort(nums); // Already in descending order
+ *     }
+ * }
+ *************************************************************/
